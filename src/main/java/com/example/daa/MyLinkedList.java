@@ -5,6 +5,7 @@ public class MyLinkedList {
     private Node head;
     private int size;
     private final Metrics metrics;
+    private Node tail;
 
     private static class Node {
         int value;
@@ -17,6 +18,7 @@ public class MyLinkedList {
 
     public MyLinkedList(Metrics metrics) {
         head = null;
+        tail = null;
         size = 0;
         this.metrics = metrics;
     }
@@ -26,17 +28,15 @@ public class MyLinkedList {
 
         if (head == null) {
             head = newNode;
+            tail = newNode;
+
             metrics.addMove();
-        }
-        else {
-            Node current = head;
+            metrics.addMove();
+        } else {
+            tail.next = newNode;
+            metrics.addMove();
 
-            while (current.next != null) {
-                current = current.next;
-                metrics.addStep();
-            }
-
-            current.next = newNode;
+            tail = newNode;
             metrics.addMove();
         }
 
@@ -91,6 +91,11 @@ public class MyLinkedList {
 
             head = newNode;
             metrics.addMove();
+
+            if (size == 0) {
+                tail = newNode;
+                metrics.addMove();
+            }
         }
         else {
             Node current = head;
@@ -105,6 +110,11 @@ public class MyLinkedList {
 
             current.next = newNode;
             metrics.addMove();
+
+            if (index == size) {
+                tail = newNode;
+                metrics.addMove();
+            }
         }
 
         size++;
@@ -128,6 +138,14 @@ public class MyLinkedList {
 
             head = head.next;
             metrics.addMove();
+
+            size--;
+
+            if (size == 0) {
+                tail = null;
+                metrics.addMove();
+            }
+
         } else {
             Node current = head;
 
@@ -140,9 +158,14 @@ public class MyLinkedList {
 
             current.next = current.next.next;
             metrics.addMove();
-        }
 
-        size--;
+            size--;
+
+            if (index == size) {
+                tail = current;
+                metrics.addMove();
+            }
+        }
 
         return removedValue;
     }
